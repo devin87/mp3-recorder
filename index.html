@@ -1,0 +1,128 @@
+﻿<!doctype html>
+<html>
+<head>
+    <title>mp3录音示例</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <style type="text/css">
+        .container { width: 300px; margin: 100px auto 0; }
+
+        .button-box { text-align: center; }
+        #time { font-size: 16px; text-align: center; padding: 5px 0; }
+        #audio { text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="button-box">
+            <input type="button" id="button" value="开始录音" />
+        </div>
+        <div id="time"></div>
+        <div id="download"></div>
+        <div id="audio"></div>
+    </div>
+    <script type="text/javascript" src="js/recorder.js"></script>
+    <script>
+        /*
+            MP3的采样频率分为 48000 44100 32000 24000 22050 16000 12050 8000
+
+            比特率值与现实音频对照（仅供参考）
+        　　16Kbps=电话音质
+        　　24Kbps=增加电话音质、短波广播、长波广播、欧洲制式中波广播
+        　　40Kbps=美国制式中波广播
+        　　56Kbps=话音
+        　　64Kbps=增加话音（手机铃声最佳比特率设定值、手机单声道MP3播放器最佳设定值）
+        　　112Kbps=FM调频立体声广播
+        　　128Kbps=磁带（手机立体声MP3播放器最佳设定值、低档MP3播放器最佳设定值）
+        　　160Kbps=HIFI高保真（中高档MP3播放器最佳设定值） 　
+          　192Kbps=CD（高档MP3播放器最佳设定值）
+        　　256Kbps=Studio音乐工作室（音乐发烧友适用）
+        */
+
+        function get(id) {
+            return document.getElementById(id);
+        }
+
+        var URL = window.URL || window.webkitURL;
+
+        var elButton = get("button"),
+            elTime = get("time"),
+            elDownload = get("download"),
+            elAudio = get("audio");
+
+        var recorder = new MP3Recorder({
+            numChannels: 1,     //声道数
+            sampleRate: 8000,   //采样率
+            bitRate: 64,        //比特率
+
+            //录音结束事件
+            complete: function (data, type) {
+                var blob = new Blob(data, { type: type }),
+                    url = URL.createObjectURL(blob),
+                    mp3Name = 'recording_' + Date.now() + '.mp3';
+
+                elDownload.innerHTML = '<a href="' + url + '" download="' + mp3Name + '">' + mp3Name + '</a>';
+                elAudio.innerHTML = '<audio controls src="' + url + '"></audio>';
+            }
+        });
+
+        var isStart = true, time = 0, timer;
+
+        //更新计时器
+        function updateTimer() {
+            elTime.innerHTML = "计时：" + (time++);
+        }
+
+        //更新按钮
+        function updateButton() {
+            isStart = !isStart;
+
+            elButton.value = isStart ? "开始录音" : "停止录音";
+        }
+
+        //输出错误信息
+        function writeError(msg) {
+            elAudio.innerHTML = msg;
+        }
+
+        if (!recorder.support) writeError("您的浏览器不支持HTML5录音！");
+
+        elButton.onclick = function () {
+            if (!recorder.support) return;
+
+            if (isStart) {
+                time = 0;
+
+                //开始录音
+                recorder.start(function () {
+                    updateButton();
+                    timer = setInterval(updateTimer, 1000);
+                }, function (e) {
+                    switch (e.code || e.name) {
+                        case 'PERMISSION_DENIED':
+                        case 'PermissionDeniedError':
+                            writeError('用户拒绝提供设备。');
+                            break;
+                        case 'NOT_SUPPORTED_ERROR':
+                        case 'NotSupportedError':
+                            writeError('浏览器不支持硬件设备。');
+                            break;
+                        case 'MANDATORY_UNSATISFIED_ERROR':
+                        case 'MandatoryUnsatisfiedError':
+                            writeError('无法发现指定的硬件设备。');
+                            break;
+                        default:
+                            writeError('无法打开麦克风。异常信息:' + (e.code || e.name));
+                            break;
+                    }
+                });
+            } else {
+                //停止录音
+                recorder.stop();
+                if (timer) clearInterval(timer);
+                updateButton();
+            }
+        };
+
+    </script>
+</body>
+</html>
