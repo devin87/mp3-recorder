@@ -2,7 +2,7 @@
 * recorder-worker.js 录制音频并输出为MP3格式
 * https://github.com/devin87/mp3-recorder
 * author:devin87@qq.com  
-* update:2015/12/29 17:19
+* update:2015/12/30 08:58
 */
 (function (undefined) {
     "use strict";
@@ -29,7 +29,7 @@
     var dataBuffer = [],     //数据缓冲区
         mp3Encoder,          //mp3编码器
         numChannels,         //通道数
-        sampleBits,          //采样位数
+        //sampleBits,          //采样位数
         inputSampleRate,     //输入采样率
         outputSampleRate;    //输出采样率
 

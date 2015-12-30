@@ -3,12 +3,12 @@ html5录音并编码为mp3格式，支持采样率和比特率设置。
 
 ###简单调用示例
 
-1>. 导入js文件
+1\. 导入js文件
 ```html
 <script type="text/javascript" src="js/recorder.js"></script>
 ```
 
-2>. 调用
+2\. 调用
 ```js
 var recorder = new MP3Recorder({
     numChannels: 1,     //声道数

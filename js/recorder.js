@@ -2,7 +2,7 @@
 * recorder.js 录制音频并输出为MP3格式
 * https://github.com/devin87/mp3-recorder
 * author:devin87@qq.com  
-* update:2015/12/29 17:53
+* update:2015/12/30 08:58
 */
 (function (window, undefined) {
     "use strict";
@@ -23,7 +23,7 @@
         self.ops = ops;
 
         //录音支持检测
-        self.support = !!(window.AudioContext && typeof navigator.getUserMedia && window.Worker);
+        self.support = !!(window.AudioContext && navigator.getUserMedia && window.Worker);
 
         self.init();
     }
