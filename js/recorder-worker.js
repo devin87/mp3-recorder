@@ -75,6 +75,7 @@
             input = new Float32Array(buffer);
         }
 
+        //floatTo16BitPCM
         var length = input.length,
             output = new Int16Array(length),
 
