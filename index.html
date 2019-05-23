@@ -54,13 +54,15 @@
         var recorder = new MP3Recorder({
             //numChannels: 1,     //声道数,默认为1
             //sampleRate: 8000,   //采样率,一般由设备提供,比如 48000
-            bitRate: 64,        //比特率,不要低于64,否则可能录制无声音（人声）
+            bitRate: 128,        //比特率,不要低于64,否则可能录制无声音（人声）
+
+            useMediaRecorder: true, //是否使用MediaRecorder录音，暂不支持转码为mp3文件
+            recorderType: "video/webm;codes=vp9",  //默认编码，仅 useMediaRecorder 为true且浏览器支持时生效
 
             //录音结束事件
-            complete: function (data, type) {
-                var blob = new Blob(data, { type: type }),
-                    url = URL.createObjectURL(blob),
-                    mp3Name = 'recording_' + Date.now() + '.mp3';
+            complete: function (blob, ext) {
+                var url = URL.createObjectURL(blob),
+                    mp3Name = 'recording_' + Date.now() + ext;
 
                 elDownload.innerHTML = '<a href="' + url + '" download="' + mp3Name + '">' + mp3Name + '</a>';
                 elAudio.innerHTML = '<audio controls src="' + url + '"></audio>';
