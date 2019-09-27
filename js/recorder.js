@@ -2,7 +2,7 @@
 * recorder.js 录制音频并输出为MP3格式
 * https://github.com/devin87/mp3-recorder
 * author:devin87@qq.com  
-* update:2015/12/30 08:58
+* update:2019/09/27 18:30
 */
 (function (window, undefined) {
     "use strict";
@@ -54,8 +54,8 @@
                 onError = ops.error;
 
             navigator.getUserMedia({ audio: true, video: false }, function (stream) {
-                //优先使用 MediaRecorder
-                if (MediaRecorder && ops.useMediaRecorder !== false) {
+                //使用 MediaRecorder 录音
+                if (MediaRecorder && ops.useMediaRecorder) {
                     var recorderType = ops.recorderType;
                     var recorder = new MediaRecorder(stream, recorderType && MediaRecorder.isTypeSupported(recorderType) ? { mimeType: recorderType } : undefined);
 
@@ -136,19 +136,29 @@
 
                     self.source = source;
                     self.processor = processor;
+
+                    if (self.context.state == "suspended") self.context.resume();
                 }
 
                 if (typeof success == "function") success();
 
             }, error);
+
+            return self;
         },
         //暂停录音
         pause: function () {
             this._paused = true;
+            if (this.context) this.context.suspend();
+
+            return this;
         },
         //恢复录音
         resume: function () {
             this._paused = false;
+            if (this.context) this.context.resume();
+
+            return this;
         },
         //停止录音
         stop: function () {
@@ -156,7 +166,10 @@
             if (self.recorder) self.recorder.stop();
             if (self.source) self.source.disconnect();
             if (self.processor) self.processor.disconnect();
+            if (self.context) self.context.close();
             if (self.worker) self.worker.postMessage({ cmd: "stop" });
+
+            return self;
         }
     };
 
