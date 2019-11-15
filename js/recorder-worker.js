@@ -2,7 +2,7 @@
 * recorder-worker.js 录制音频并输出为MP3格式
 * https://github.com/devin87/mp3-recorder
 * author:devin87@qq.com  
-* update:2015/12/30 08:58
+* update:2019/11/15 09:05
 */
 (function (undefined) {
     "use strict";
@@ -51,8 +51,7 @@
 
         clearBuffer();
 
-        var lame = new lamejs();
-        mp3Encoder = new lame.Mp3Encoder(numChannels, outputSampleRate, data.bitRate || 128);
+        mp3Encoder = new lamejs.Mp3Encoder(numChannels, outputSampleRate, data.bitRate || 128);
     }
 
     //数据压缩与转换
